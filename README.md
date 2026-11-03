@@ -1,4 +1,4 @@
-# @kivio/mcp-creator
+# @kiviocreatorsmcp/mcp-creator
 
 MCP server for the KiVio creator surface. Drive your KiVio Studio from
 Claude Code (or any Model Context Protocol client): upload videos,
@@ -15,7 +15,7 @@ admin deletion.
 ## Install
 
 ```bash
-npm install -g @kivio/mcp-creator
+npm install -g @kiviocreatorsmcp/mcp-creator
 ```
 
 Verify:

@@ -1,5 +1,5 @@
 {
-  "name": "@kivio/mcp-creator",
+  "name": "@kiviocreatorsmcp/mcp-creator",
   "version": "0.1.0",
   "description": "MCP server for KiVio creators. Upload AI-generated videos, manage series, respond to commissions, and earn 70% of every coin parents spend — all from Claude Code. The first MCP built for AI-video creator monetization.",
   "license": "UNLICENSED",
@@ -30,10 +30,10 @@
   "homepage": "https://kidsaivideo.com/guides/mcp-for-creators",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DevSwat-ResonantGenesis/kivio-mcp-creator.git"
+    "url": "git+https://github.com/louienemesh/kivio-mcp-creator.git"
   },
   "bugs": {
-    "url": "https://github.com/DevSwat-ResonantGenesis/kivio-mcp-creator/issues"
+    "url": "https://github.com/louienemesh/kivio-mcp-creator/issues"
   },
   "author": {
     "name": "KiVio",
