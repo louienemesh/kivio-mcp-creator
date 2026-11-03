@@ -112,6 +112,7 @@ const CounterIn        = z.object({ id: z.string().uuid(), offerCoins: z.number(
 const DeliverIn        = z.object({ id: z.string().uuid(), videoId: z.string().uuid() }).strict();
 const ReplyIn          = z.object({ threadId: z.string().uuid(), body: z.string().min(1).max(2000) }).strict();
 const DeletionReqIn    = z.object({ videoId: z.string().uuid(), reason: z.string().min(10).max(1000) }).strict();
+const CertificateIn    = z.object({ videoId: z.string().uuid() }).strict();
 const LinkAccountIn    = z.object({ code: z.string().min(5).max(40) }).strict();
 
 // -------- Tool catalog --------
@@ -133,6 +134,7 @@ const TOOLS: Tool[] = [
   { name: 'kivio.deliver_commission',     description: 'Attach a delivery video to an ACCEPTED commission; the video\'s series must be a commission bucket.', inputSchema: zodToJsonSchema(DeliverIn) },
   { name: 'kivio.reply_in_thread',        description: 'Send a DM reply in a chat thread. Server-side scrubber strips contact info before store.', inputSchema: zodToJsonSchema(ReplyIn) },
   { name: 'kivio.request_video_deletion', description: 'Submit a SAFE_LIVE video for admin deletion review with a short reason.', inputSchema: zodToJsonSchema(DeletionReqIn) },
+  { name: 'kivio.get_certificate',        description: 'Issue a Certificate of Digital Platform Origin for a SAFE_LIVE video. Returns the signed envelope (creatorDisplayName + creatorEmail + publishedAt + SHA-256) plus printable + verifier URLs. Use as prior-art evidence for DMCA / platform-takedown filings.', inputSchema: zodToJsonSchema(CertificateIn) },
 ];
 
 // -------- Dispatch --------
@@ -240,6 +242,7 @@ async function dispatch(name: string, raw: Record<string, unknown>): Promise<unk
     case 'kivio.deliver_commission': { const b = DeliverIn.parse(raw);           return api(`/creator/commissions/${b.id}/deliver`, { method: 'POST', body: { videoId: b.videoId } }); }
     case 'kivio.reply_in_thread':    { const b = ReplyIn.parse(raw);             return api(`/creator/dm/threads/${b.threadId}/messages`, { method: 'POST', body: { body: b.body } }); }
     case 'kivio.request_video_deletion': { const b = DeletionReqIn.parse(raw);   return api(`/creator/videos/${b.videoId}/deletion-request`, { method: 'POST', body: { reason: b.reason } }); }
+    case 'kivio.get_certificate':        { const b = CertificateIn.parse(raw);   return api(`/creator/videos/${b.videoId}/certificate`); }
     default:
       throw new Error(`unknown tool: ${name}`);
   }

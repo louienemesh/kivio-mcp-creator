@@ -87,6 +87,7 @@ starts. Status rolls into `kivio.list_videos` within seconds.
 | `kivio.deliver_commission`     | Attach a video to a commission (must sit in a `PUBLIC_COMMISSION` or `PRIVATE_COMMISSION` series) |
 | `kivio.reply_in_thread`        | DM reply (server-side contact-info scrubber runs on every message) |
 | `kivio.request_video_deletion` | Submit a SAFE_LIVE video for admin removal |
+| `kivio.get_certificate`        | Issue a signed **Certificate of Digital Platform Origin** for a SAFE_LIVE video. Payload carries display name + verified email + publish timestamp + SHA-256 of the original upload. For DMCA / prior-art evidence on other platforms. |
 
 ## Environment overrides
 

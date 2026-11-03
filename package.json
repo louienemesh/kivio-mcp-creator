@@ -1,6 +1,6 @@
 {
   "name": "@kiviocreatorsmcp/mcp-creator",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "mcpName": "io.github.louienemesh/kivio-mcp-creator",
   "description": "MCP server for KiVio creators. Upload AI-generated videos, manage series, respond to commissions, earn 70% of every coin parents spend. First MCP for AI-video creator monetization.",
   "license": "UNLICENSED",
