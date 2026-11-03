@@ -1,15 +1,19 @@
 {
   "name": "@kiviocreatorsmcp/mcp-creator",
-  "version": "0.1.0",
-  "description": "MCP server for KiVio creators. Upload AI-generated videos, manage series, respond to commissions, and earn 70% of every coin parents spend — all from Claude Code. The first MCP built for AI-video creator monetization.",
+  "version": "0.1.1",
+  "mcpName": "io.github.louienemesh/kivio-mcp-creator",
+  "description": "MCP server for KiVio creators. Upload AI-generated videos, manage series, respond to commissions, earn 70% of every coin parents spend. First MCP for AI-video creator monetization.",
   "license": "UNLICENSED",
   "private": false,
   "type": "module",
   "main": "./dist/index.js",
   "bin": {
-    "kivio-mcp": "./dist/index.js"
+    "kivio-mcp": "dist/index.js"
   },
-  "files": ["dist", "README.md"],
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "keywords": [
     "mcp",
     "model-context-protocol",

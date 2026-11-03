@@ -1,0 +1,20 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.louienemesh/kivio-mcp-creator",
+  "title": "KiVio Creator",
+  "description": "Upload AI videos, manage series, handle commissions, see earnings on KiVio.",
+  "repository": {
+    "url": "https://github.com/louienemesh/kivio-mcp-creator",
+    "source": "github"
+  },
+  "version": "0.1.1",
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "@kiviocreatorsmcp/mcp-creator",
+      "version": "0.1.1",
+      "transport": { "type": "stdio" }
+    }
+  ]
+}
