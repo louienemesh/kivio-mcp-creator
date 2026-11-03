@@ -1,0 +1,62 @@
+{
+  "name": "@kivio/mcp-creator",
+  "version": "0.1.0",
+  "description": "MCP server for KiVio creators. Upload AI-generated videos, manage series, respond to commissions, and earn 70% of every coin parents spend — all from Claude Code. The first MCP built for AI-video creator monetization.",
+  "license": "UNLICENSED",
+  "private": false,
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "kivio-mcp": "./dist/index.js"
+  },
+  "files": ["dist", "README.md"],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "claude",
+    "claude-code",
+    "anthropic",
+    "kivio",
+    "ai-video",
+    "ai-content",
+    "ai-cartoon",
+    "creator-economy",
+    "creator-monetization",
+    "ai-creator",
+    "direct-pay",
+    "video-upload",
+    "kids-content"
+  ],
+  "homepage": "https://kidsaivideo.com/guides/mcp-for-creators",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DevSwat-ResonantGenesis/kivio-mcp-creator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DevSwat-ResonantGenesis/kivio-mcp-creator/issues"
+  },
+  "author": {
+    "name": "KiVio",
+    "email": "support@kidsaivideo.com",
+    "url": "https://kidsaivideo.com"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.5.4"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
