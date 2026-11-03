@@ -88,6 +88,16 @@ starts. Status rolls into `kivio.list_videos` within seconds.
 | `kivio.reply_in_thread`        | DM reply (server-side contact-info scrubber runs on every message) |
 | `kivio.request_video_deletion` | Submit a SAFE_LIVE video for admin removal |
 | `kivio.get_certificate`        | Issue a signed **Certificate of Digital Platform Origin** for a SAFE_LIVE video. Payload carries display name + verified email + publish timestamp + SHA-256 of the original upload. For DMCA / prior-art evidence on other platforms. |
+| `kivio.update_video`           | Edit title / seriesId / episodeNumber on an existing video (post-SAFE_LIVE series moves blocked; episode-number reorder always allowed, server auto-recomputes coinCost) |
+| `kivio.delete_video`           | Delete a non-live video (INTAKE / QUALITY_CHECK / MODERATION / REJECTED) |
+| `kivio.update_series`          | Edit a series' title / description / releaseDate (totalEpisodesPlanned, isExclusive, commissionBucket stay locked at creation) |
+| `kivio.reorder_series`         | Reorder your series on the public profile — pass the full id list in display order |
+| `kivio.list_dm_threads`        | Every DM thread with parents (newest first), with unread count |
+| `kivio.read_thread`            | Latest N messages (default 20) in one DM thread; marks the thread read |
+| `kivio.get_analytics`          | Full KPI block: platform fee, escrow hold, lifetime gross/pending/available/paid-out, chargeback + safety-flag counts, payout eligibility, video count |
+| `kivio.list_tips`              | Last 100 tips received + totals (released vs pending) |
+| `kivio.submit_support_ticket`  | Open a ticket to KiVio operators; optional videoId |
+| `kivio.list_support_tickets`   | Your submitted support tickets, newest first — status + admin response |
 
 ## Environment overrides
 

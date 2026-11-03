@@ -114,6 +114,31 @@ const ReplyIn          = z.object({ threadId: z.string().uuid(), body: z.string(
 const DeletionReqIn    = z.object({ videoId: z.string().uuid(), reason: z.string().min(10).max(1000) }).strict();
 const CertificateIn    = z.object({ videoId: z.string().uuid() }).strict();
 const LinkAccountIn    = z.object({ code: z.string().min(5).max(40) }).strict();
+const UpdateVideoIn    = z.object({
+  videoId:       z.string().uuid(),
+  title:         z.string().min(1).max(200).optional(),
+  seriesId:      z.string().uuid().nullish(),
+  episodeNumber: z.number().int().positive().nullish(),
+}).strict();
+const DeleteVideoIn    = z.object({ videoId: z.string().uuid() }).strict();
+const UpdateSeriesIn   = z.object({
+  seriesId:    z.string().uuid(),
+  title:       z.string().min(1).max(200).optional(),
+  description: z.string().max(2000).nullish(),
+  releaseDate: z.string().datetime().nullish(),
+}).strict();
+const ReorderSeriesIn  = z.object({
+  orderedIds: z.array(z.string().uuid()).min(1).max(500),
+}).strict();
+const ReadThreadIn     = z.object({
+  threadId: z.string().uuid(),
+  limit:    z.number().int().min(1).max(100).optional(),
+}).strict();
+const SupportTicketIn  = z.object({
+  subject: z.string().min(3).max(200),
+  body:    z.string().min(5).max(5000),
+  videoId: z.string().uuid().optional(),
+}).strict();
 
 // -------- Tool catalog --------
 
@@ -135,6 +160,16 @@ const TOOLS: Tool[] = [
   { name: 'kivio.reply_in_thread',        description: 'Send a DM reply in a chat thread. Server-side scrubber strips contact info before store.', inputSchema: zodToJsonSchema(ReplyIn) },
   { name: 'kivio.request_video_deletion', description: 'Submit a SAFE_LIVE video for admin deletion review with a short reason.', inputSchema: zodToJsonSchema(DeletionReqIn) },
   { name: 'kivio.get_certificate',        description: 'Issue a Certificate of Digital Platform Origin for a SAFE_LIVE video. Returns the signed envelope (creatorDisplayName + creatorEmail + publishedAt + SHA-256) plus printable + verifier URLs. Use as prior-art evidence for DMCA / platform-takedown filings.', inputSchema: zodToJsonSchema(CertificateIn) },
+  { name: 'kivio.update_video',           description: 'Edit a video\'s metadata: title, seriesId, episodeNumber. Series moves blocked after SAFE_LIVE; episode-number reorder inside the same series is allowed any time and server auto-recomputes coinCost.', inputSchema: zodToJsonSchema(UpdateVideoIn) },
+  { name: 'kivio.delete_video',           description: 'Delete a non-live video the creator owns (INTAKE / QUALITY_CHECK / MODERATION / REJECTED). SAFE_LIVE videos must go through kivio.request_video_deletion.', inputSchema: zodToJsonSchema(DeleteVideoIn) },
+  { name: 'kivio.update_series',          description: 'Edit a series\' title / description / releaseDate. totalEpisodesPlanned, isExclusive, commissionBucket stay locked at creation.', inputSchema: zodToJsonSchema(UpdateSeriesIn) },
+  { name: 'kivio.reorder_series',         description: 'Reorder the creator\'s series on their public profile. Pass the full list of series ids in desired display order.', inputSchema: zodToJsonSchema(ReorderSeriesIn) },
+  { name: 'kivio.list_dm_threads',        description: 'List DM threads this creator has with parents (newest first). Returns thread id + parent short-tag + last-message-at + creator-side unread count.', inputSchema: zodToJsonSchema(emptyIn) },
+  { name: 'kivio.read_thread',            description: 'Read the latest N messages in one DM thread (default 20). Marks the creator-side unread counter to zero.', inputSchema: zodToJsonSchema(ReadThreadIn) },
+  { name: 'kivio.get_analytics',          description: 'Creator KPI snapshot: platform fee, escrow hold, lifetime gross/pending/available/paid-out coins, chargeback + safety-flag counts, payout eligibility, video count.', inputSchema: zodToJsonSchema(emptyIn) },
+  { name: 'kivio.list_tips',              description: 'Last 100 tips received, plus totals (released vs pending). Each row carries the transaction id, gross coins, your 70% share, tipper type, optional note.', inputSchema: zodToJsonSchema(emptyIn) },
+  { name: 'kivio.list_support_tickets',   description: 'Your submitted support tickets, newest first. Shows status + admin response.', inputSchema: zodToJsonSchema(emptyIn) },
+  { name: 'kivio.submit_support_ticket',  description: 'Open a support ticket to KiVio operators. Attach a videoId to flag a specific upload.', inputSchema: zodToJsonSchema(SupportTicketIn) },
 ];
 
 // -------- Dispatch --------
@@ -243,6 +278,39 @@ async function dispatch(name: string, raw: Record<string, unknown>): Promise<unk
     case 'kivio.reply_in_thread':    { const b = ReplyIn.parse(raw);             return api(`/creator/dm/threads/${b.threadId}/messages`, { method: 'POST', body: { body: b.body } }); }
     case 'kivio.request_video_deletion': { const b = DeletionReqIn.parse(raw);   return api(`/creator/videos/${b.videoId}/deletion-request`, { method: 'POST', body: { reason: b.reason } }); }
     case 'kivio.get_certificate':        { const b = CertificateIn.parse(raw);   return api(`/creator/videos/${b.videoId}/certificate`); }
+    case 'kivio.update_video': {
+      const b = UpdateVideoIn.parse(raw);
+      const patch: Record<string, unknown> = {};
+      if (b.title         !== undefined) patch['title']         = b.title;
+      if (b.seriesId      !== undefined) patch['seriesId']      = b.seriesId;
+      if (b.episodeNumber !== undefined) patch['episodeNumber'] = b.episodeNumber;
+      return api(`/creator/videos/${b.videoId}`, { method: 'PATCH', body: patch });
+    }
+    case 'kivio.delete_video':           { const b = DeleteVideoIn.parse(raw);     return api(`/creator/videos/${b.videoId}`,            { method: 'DELETE' }); }
+    case 'kivio.update_series': {
+      const b = UpdateSeriesIn.parse(raw);
+      const patch: Record<string, unknown> = {};
+      if (b.title       !== undefined) patch['title']       = b.title;
+      if (b.description !== undefined) patch['description'] = b.description;
+      if (b.releaseDate !== undefined) patch['releaseDate'] = b.releaseDate;
+      return api(`/creator/series/${b.seriesId}`, { method: 'PATCH', body: patch });
+    }
+    case 'kivio.reorder_series':         { const b = ReorderSeriesIn.parse(raw);   return api('/creator/series/order',                   { method: 'PATCH', body: { orderedIds: b.orderedIds } }); }
+    case 'kivio.list_dm_threads':        {                                         return api('/creator/dm/threads'); }
+    case 'kivio.read_thread': {
+      const b = ReadThreadIn.parse(raw);
+      const qs = b.limit !== undefined ? `?limit=${b.limit}` : '';
+      return api(`/creator/dm/threads/${b.threadId}/messages${qs}`);
+    }
+    case 'kivio.get_analytics':          {                                         return api('/creator/analytics'); }
+    case 'kivio.list_tips':              {                                         return api('/creator/tips/received'); }
+    case 'kivio.list_support_tickets':   {                                         return api('/creator/support/tickets'); }
+    case 'kivio.submit_support_ticket': {
+      const b = SupportTicketIn.parse(raw);
+      const body: Record<string, unknown> = { subject: b.subject, body: b.body };
+      if (b.videoId !== undefined) body['videoId'] = b.videoId;
+      return api('/creator/support/tickets', { method: 'POST', body });
+    }
     default:
       throw new Error(`unknown tool: ${name}`);
   }
